@@ -1,19 +1,12 @@
 
 #!/usr/bin/env python
 import sys
-from tensorflow import keras
+import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
-import matplotlib.pyplot as plt
-import scipy.misc
-import numpy as np
-from tensorflow.keras.models import *
-from tensorflow.keras.layers import *
-from tensorflow.keras.optimizers import *
-from tensorflow.keras.callbacks import ModelCheckpoint, LearningRateScheduler
-import math
+from tensorflow.python.keras.models import *
+from tensorflow.python.keras.layers import *
 from PIL import Image
-import random
 
 input_size = (256,256,1)
 

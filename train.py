@@ -138,7 +138,7 @@ def build_discriminator(input_size = input_size):
 def train_gan(generator,discriminator, ep_start=1, epochs=1, batch_size=128):
     
     list_deg_images= os.listdir('data/A/')
-    list_clean_images= os.listdir('data/A/')
+    list_clean_images= os.listdir('data/B/')
     
     list_deg_images.sort()
     list_clean_images.sort()
@@ -194,8 +194,8 @@ def train_gan(generator,discriminator, ep_start=1, epochs=1, batch_size=128):
                 discriminator.trainable = False
                 gan.train_on_batch([b_wat_batch], [valid, b_gt_batch])
 
-        # if (e == 1 or e % 2 == 0):
-        #     evaluate(generator,discriminator,e)
+        if (e == 1 or e % 2 == 0):
+            evaluate(generator,discriminator,e)
     # return generator,discriminator
 
 def get_gan_network(discriminator, generator, optimizer,input_size = input_size):
@@ -274,24 +274,24 @@ def predic(generator, epoch):
 ### if you want to evaluate each epoch:
 
 
-# def  evaluate(generator,discriminator,epoch):
-#     predic(generator,epoch)
-#     avg_psnr=0
-#     qo=0
+def  evaluate(generator,discriminator,epoch):
+    predic(generator,epoch)
+    avg_psnr=0
+    qo=0
 
-#     for i in range (0,31):
+    for i in range (0,31):
         
-#         test_image= plt.imread('CLEAN/VALIDATION/GT/'+ str(i+1) + '.png')
+        test_image= plt.imread('CLEAN/VALIDATION/GT/'+ str(i+1) + '.png')
 
-#         predicted_image= plt.imread('Results/epoch'+str(epoch)+'/predicted'+ str(i+1) + '.png')
-#         avg_psnr= avg_psnr + psnr(test_image,predicted_image)
-#         qo=qo+1
-#     avg_psnr=avg_psnr/qo
-#     print('psnr= ',avg_psnr)
-#     if not os.path.exists('Results/epoch'+str(epoch)+'/weights'):
-#         os.makedirs('Results/epoch'+str(epoch)+'/weights')
-#     discriminator.save_weights("Results/epoch"+str(epoch)+"/weights/discriminator_weights.h5")
-#     generator.save_weights("Results/epoch"+str(epoch)+"/weights/generator_weights.h5")
+        predicted_image= plt.imread('Results/epoch'+str(epoch)+'/predicted'+ str(i+1) + '.png')
+        avg_psnr= avg_psnr + psnr(test_image,predicted_image)
+        qo=qo+1
+    avg_psnr=avg_psnr/qo
+    print('psnr= ',avg_psnr)
+    if not os.path.exists('Results/epoch'+str(epoch)+'/weights'):
+        os.makedirs('Results/epoch'+str(epoch)+'/weights')
+    discriminator.save_weights("Results/epoch"+str(epoch)+"/weights/discriminator_weights.h5")
+    generator.save_weights("Results/epoch"+str(epoch)+"/weights/generator_weights.h5")
 
 
 ##################################
@@ -311,4 +311,4 @@ discriminator = build_discriminator()
 
 ###############################################
 
-train_gan(generator,discriminator, ep_start =epo, epochs=80, batch_size=4)
+train_gan(generator,discriminator, ep_start =epo, epochs=2, batch_size=4)
