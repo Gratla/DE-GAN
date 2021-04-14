@@ -1,0 +1,20 @@
+#!/bin/bash
+#
+#SBATCH -J train_v1
+#SBATCH -N 1
+#SBATCH --partition gpu_gtx1080single
+#SBATCH --qos gpu_gtx1080single
+#SBATCH --gres gpu:1
+#SBATCH --mail-type=BEGIN
+#SBATCH --mail-user=e11808219@student.tuwien.ac.at
+
+
+module purge
+module load cuda/10.0.130  # same version as used to create the venv
+module load gcc/7.3 python/3.7 # same version as used to create the venv
+export PYTHONPATH=~/BA/bin/python # this is sometimes needed for python modules and search paths
+
+source ~/BA/bin/activate
+pip3 install tensorflow==2.0.0
+pip3 install numpy scipy matplotlib Pillow tqdm imageio
+~/BA/bin/python -u ~/DE-GAN1/train.py

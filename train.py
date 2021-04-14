@@ -295,6 +295,7 @@ def  evaluate(generator,discriminator,epoch):
 
 
 ##################################
+print("Starting training...")
 
 epo = 1
 
@@ -312,3 +313,4 @@ discriminator = build_discriminator()
 ###############################################
 
 train_gan(generator,discriminator, ep_start =epo, epochs=2, batch_size=4)
+print("Finished!")
