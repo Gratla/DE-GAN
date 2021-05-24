@@ -275,19 +275,19 @@ def predic(generator, epoch):
 
 
 def  evaluate(generator,discriminator,epoch):
-    predic(generator,epoch)
-    avg_psnr=0
-    qo=0
+    #predic(generator,epoch)
+    #avg_psnr=0
+    #qo=0
 
-    for i in range (0,31):
-        
-        test_image= plt.imread('CLEAN/VALIDATION/GT/'+ str(i+1) + '.png')
-
-        predicted_image= plt.imread('Results/epoch'+str(epoch)+'/predicted'+ str(i+1) + '.png')
-        avg_psnr= avg_psnr + psnr(test_image,predicted_image)
-        qo=qo+1
-    avg_psnr=avg_psnr/qo
-    print('psnr= ',avg_psnr)
+    # for i in range (0,31):
+    #
+    #     test_image= plt.imread('CLEAN/VALIDATION/GT/'+ str(i+1) + '.png')
+    #
+    #     predicted_image= plt.imread('Results/epoch'+str(epoch)+'/predicted'+ str(i+1) + '.png')
+    #     avg_psnr= avg_psnr + psnr(test_image,predicted_image)
+    #     qo=qo+1
+    # avg_psnr=avg_psnr/qo
+    # print('psnr= ',avg_psnr)
     if not os.path.exists('Results/epoch'+str(epoch)+'/weights'):
         os.makedirs('Results/epoch'+str(epoch)+'/weights')
     discriminator.save_weights("Results/epoch"+str(epoch)+"/weights/discriminator_weights.h5")
@@ -309,8 +309,12 @@ discriminator = build_discriminator()
 # generator.load_weights("Results/epoch"+str(epo-1)+"/weights/generator_weights.h5")
 # discriminator.load_weights("Results/epoch"+str(epo-1)+"/weights/discriminator_weights.h5")
 
+### use generator weights of the orignial paper ################
+
+epo = 80
+generator.load_weights("./weights/binarization_generator_weights.h5")
 
 ###############################################
 
-train_gan(generator,discriminator, ep_start =epo, epochs=2, batch_size=4)
+train_gan(generator, discriminator, ep_start =epo, epochs=4, batch_size=128)
 print("Finished!")

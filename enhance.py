@@ -130,7 +130,11 @@ else:
             generator = unet()
             generator.load_weights("weights/watermark_rem_weights.h5")
         else:
-            print("Wrong task, please specify a correct task !")
+            if task.startswith('epoch'):
+                generator = unet_bin()
+                generator.load_weights("weights/"+str(task)+"/weights/generator_weights.h5")
+            else:
+                print("Wrong task, please specify a correct task !")
 
 
 def split2(dataset,size,h,w):
@@ -185,7 +189,7 @@ predicted_image=merge_image2(predicted_image,h,w)
 predicted_image=predicted_image[:test_image.shape[0],:test_image.shape[1]]
 predicted_image=predicted_image.reshape(predicted_image.shape[0],predicted_image.shape[1])
 #     predicted_image = (predicted_image[:,:])*255
-if task == 'binarize':
+if (task == 'binarize' or task.startswith('epoch')):
     bin_thresh = 0.95
     predicted_image = (predicted_image[:,:]>bin_thresh)*1
 
