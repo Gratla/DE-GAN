@@ -37,12 +37,12 @@ def getPatches(watermarked_image,clean_image,mystride):
     
     h =  ((clean_image.shape [0] // 256) +1)*256 
     w =  ((clean_image.shape [1] // 256 ) +1)*256
-    image_padding=np.ones((h,w))*255
+    image_padding=np.ones((h,w)) # *255
     image_padding[:clean_image.shape[0],:clean_image.shape[1]]=clean_image
 
     for j in range (0,h-256,mystride):    #128 not 64
         for k in range (0,w-256,mystride):
-            clean_patches.append(image_padding[j:j+256,k:k+256]/255)  
+            clean_patches.append(image_padding[j:j+256,k:k+256]) # /255)
             
     return np.array(watermarked_patches),np.array(clean_patches)
 
@@ -313,8 +313,9 @@ discriminator = build_discriminator()
 
 epo = 80
 generator.load_weights("./weights/binarization_generator_weights.h5")
+discriminator.load_weights("./weights/discriminator_weights.h5")
 
 ###############################################
 
-train_gan(generator, discriminator, ep_start =epo, epochs=4, batch_size=128)
+train_gan(generator, discriminator, ep_start =epo, epochs=160, batch_size=4)
 print("Finished!")
