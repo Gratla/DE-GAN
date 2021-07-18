@@ -2,15 +2,16 @@ import sys
 import os
 from PIL import Image, ImageOps
 
+# Comments are here to enable export of the function.
 
-folder = sys.argv[1]
-outputFolder = sys.argv[2]
+#folder = sys.argv[1]
+#outputFolder = sys.argv[2]
 
-def invertImage(filename):
-    im = Image.open(folder + '/' + filename)
+def invertImage(inputFilePath, outputFilePath):
+    im = Image.open(inputFilePath)
     im_invert = ImageOps.invert(im)
-    im_invert.save(outputFolder + '/' + filename)
+    im_invert.save(outputFilePath)
 
 
-for f in os.listdir(folder):
-    invertImage(f)
+#for f in os.listdir(folder):
+#    invertImage(folder + '/' + f, outputFolder + '/' + f)
