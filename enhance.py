@@ -164,12 +164,8 @@ deg_image_path = sys.argv[2]
 
 deg_image = Image.open(deg_image_path)# /255.0
 deg_image = deg_image.convert('L')
-deg_image.save('curr_image.png')
 
-
-test_image = plt.imread('curr_image.png')
-
-
+test_image = np.divide(np.asfarray(deg_image.getdata()).reshape(deg_image.size[1], deg_image.size[0]), 255)
 
 
 h =  ((test_image.shape [0] // 256) +1)*256 
