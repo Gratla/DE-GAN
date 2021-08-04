@@ -16,7 +16,8 @@ pcaFirstFolder = "/pcaFirstDeganSecond"
 deganFolder = "/degan"
 deganFirstFolder = "/deganFirstPcaSecond"
 deganFirstInvertedFolder = "/deganFirstPcaSecondInverted"
-deganMode = "epoch114batchsize64_msi_bin"
+deganMode = "epoch130batchsize64_msi_bin"
+reduceMSI = True
 
 @click.command()
 @click.argument('mode')
@@ -42,14 +43,17 @@ def enhanceMSI(mode, msiname, msipath, outputpath):
 
 # Executes a PCA on the given msi which needs to have 12 images
 def pca(msiName, msiPath, outputPath):
-    executePCA(msiName, msiPath, outputPath, 12)
+    files = reduceMSIs(glob.glob(msiPath + '/' + msiName + '_*.png'))
+    executePCA(msiName, msiPath, outputPath, len(files))
 
 
 # Executes a PCA on the input msi, inverts the first component of the result
 # and feeds the first component into the DE-GAN
 def enhancePCAFirst(msiName, msiPath, outputPath):
+    files = reduceMSIs(glob.glob(msiPath + '/' + msiName + '_*.png'))
+
     # Execute PCA
-    executePCA(msiName, msiPath, outputPath + pcaFolder, 12)
+    executePCA(msiName, msiPath, outputPath + pcaFolder, len(files))
 
     # Invert first Component
     Path(outputPath + pcaInvertedFolder).mkdir(parents=True, exist_ok=True)
@@ -67,7 +71,7 @@ def enhancePCAFirst(msiName, msiPath, outputPath):
 def enhanceDEGANFirst(msiName, msiPath, outputPath):
     # Enhance inverted first Component with DE-GAN
     Path(outputPath + deganFolder).mkdir(parents=True, exist_ok=True)
-    files = glob.glob(msiPath + '/' + msiName + '_*.png')
+    files = reduceMSIs(glob.glob(msiPath + '/' + msiName + '_*.png'))
     print("Found MSIs: " + str(files))
 
     # Do enhancement for every file of the msi
@@ -79,12 +83,19 @@ def enhanceDEGANFirst(msiName, msiPath, outputPath):
                         stdout=subprocess.PIPE)
 
     # Execute PCA
-    executePCA('degan_' + msiName, outputPath + deganFolder, outputPath + deganFirstFolder, 12)
+    executePCA('degan_' + msiName, outputPath + deganFolder, outputPath + deganFirstFolder, len(files))
 
     # Invert first Component
     Path(outputPath + deganFirstInvertedFolder).mkdir(parents=True, exist_ok=True)
     invertImage(outputPath + deganFirstFolder + '/degan_' + msiName + '_' + pcaFirstComponentExtension,
                 outputPath + deganFirstInvertedFolder + '/degan_' + msiName + '_' + pcaFirstComponentExtension)
+
+# Reduces the number of files to the configured ones.
+def reduceMSIs(files):
+    if reduceMSI:
+        return [f for f in files if os.path.basename(f).endswith(("_0.png", "_1.png", "_3.png", "_5.png", "_7.png", "_9.png"))]
+    else:
+        return files
 
 
 if __name__ == '__main__':
