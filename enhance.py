@@ -114,8 +114,17 @@ def unet_bin(pretrained_weights = None,input_size = input_size):
 
 
 
+# The task defines the used weights for the generator. The string may have prefixes delimited by ';' to enable settings:
+# 'T': Use threshold for enhanced image to binarize the DE-GAN output.
+mode = sys.argv[1].split(';')
+task = mode.pop()
 
-task =  sys.argv[1]
+useThreshold = False
+
+for flag in mode:
+    if flag == "T":
+        useThreshold = True
+
 
 
 if task =='binarize':
@@ -185,7 +194,7 @@ predicted_image=merge_image2(predicted_image,h,w)
 predicted_image=predicted_image[:test_image.shape[0],:test_image.shape[1]]
 predicted_image=predicted_image.reshape(predicted_image.shape[0],predicted_image.shape[1])
 #     predicted_image = (predicted_image[:,:])*255
-if (task == 'binarize' or task.startswith('epoch')):
+if (task == 'binarize') or useThreshold:
     bin_thresh = 0.95
     predicted_image = (predicted_image[:,:]>bin_thresh)*1
 
