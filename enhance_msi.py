@@ -16,7 +16,7 @@ pcaFirstFolder = "/pcaFirstDeganSecond"
 deganFolder = "/degan"
 deganFirstFolder = "/deganFirstPcaSecond"
 deganFirstInvertedFolder = "/deganFirstPcaSecondInverted"
-deganMode = "epoch130batchsize64_msi_bin"
+deganMode = "T;epoch130batchsize64_msi_bin"
 reduceMSI = True
 
 @click.command()
