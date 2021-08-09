@@ -116,14 +116,18 @@ def unet_bin(pretrained_weights = None,input_size = input_size):
 
 # The task defines the used weights for the generator. The string may have prefixes delimited by ';' to enable settings:
 # 'T': Use threshold for enhanced image to binarize the DE-GAN output.
+# 'S': Use half of the patch size as stride size. This will remove corruptions on the edges of the patches but will slow down the performance
 mode = sys.argv[1].split(';')
 task = mode.pop()
 
 useThreshold = False
+useHalfStride = False
 
 for flag in mode:
     if flag == "T":
         useThreshold = True
+    elif flag == "S":
+        useHalfStride = True
 
 
 
@@ -194,6 +198,25 @@ predicted_image=merge_image2(predicted_image,h,w)
 predicted_image=predicted_image[:test_image.shape[0],:test_image.shape[1]]
 predicted_image=predicted_image.reshape(predicted_image.shape[0],predicted_image.shape[1])
 #     predicted_image = (predicted_image[:,:])*255
+
+if useHalfStride:
+    # Remove 128 pixel border to shift it from the original image
+    shifted_test_padding = test_padding[128:test_padding.shape[0]-128, 128:test_padding.shape[1]-128].reshape(test_padding.shape[0]-256, test_padding.shape[1]-256)
+
+    shifted_test_image_p = split2(shifted_test_padding.reshape(1, h-256, w-256, 1), 1, h-256, w-256)
+    shifted_predicted_list = []
+    for l in range(shifted_test_image_p.shape[0]):
+        shifted_predicted_list.append(generator.predict(shifted_test_image_p[l].reshape(1, 256, 256, 1)))
+
+    shifted_predicted_image = np.array(shifted_predicted_list)  # .reshape()
+    shifted_predicted_image = merge_image2(shifted_predicted_image, h-256, w-256)
+
+    shifted_predicted_image = shifted_predicted_image[:test_image.shape[0]-256, :test_image.shape[1]-256]
+    shifted_predicted_image = shifted_predicted_image.reshape(shifted_predicted_image.shape[0], shifted_predicted_image.shape[1])
+
+    # Use shifted prediction as mask
+    predicted_image[128:-128, 128:-128][shifted_predicted_image > 0.95] = 1
+
 if (task == 'binarize') or useThreshold:
     bin_thresh = 0.95
     predicted_image = (predicted_image[:,:]>bin_thresh)*1
