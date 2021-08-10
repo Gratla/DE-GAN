@@ -160,7 +160,8 @@ def split2(dataset,size,h,w):
             for iii in range(0,w,nsize2): 
                 newdataset.append(im[ii:ii+nsize1,iii:iii+nsize2,:])
     
-    return np.array(newdataset) 
+    return np.array(newdataset)
+
 def merge_image2(splitted_images, h,w):
     image=np.zeros(((h,w,1)))
     nsize1=256
@@ -170,7 +171,7 @@ def merge_image2(splitted_images, h,w):
         for iii in range(0,w,nsize2):
             image[ii:ii+nsize1,iii:iii+nsize2,:]=splitted_images[ind]
             ind=ind+1
-    return np.array(image)  
+    return np.array(image)
 
 
 deg_image_path = sys.argv[2]
@@ -200,22 +201,22 @@ predicted_image=predicted_image.reshape(predicted_image.shape[0],predicted_image
 #     predicted_image = (predicted_image[:,:])*255
 
 if useHalfStride:
-    # Remove 128 pixel border to shift it from the original image
-    shifted_test_padding = test_padding[128:test_padding.shape[0]-128, 128:test_padding.shape[1]-128].reshape(test_padding.shape[0]-256, test_padding.shape[1]-256)
+    # Add padding of 128 with color white
+    shifted_test_padding = np.pad(test_padding, pad_width=128, mode='constant', constant_values=1).reshape(test_padding.shape[0]+256, test_padding.shape[1]+256)
 
-    shifted_test_image_p = split2(shifted_test_padding.reshape(1, h-256, w-256, 1), 1, h-256, w-256)
+    shifted_test_image_p = split2(shifted_test_padding.reshape(1, h+256, w+256, 1), 1, h+256, w+256)
     shifted_predicted_list = []
     for l in range(shifted_test_image_p.shape[0]):
         shifted_predicted_list.append(generator.predict(shifted_test_image_p[l].reshape(1, 256, 256, 1)))
 
     shifted_predicted_image = np.array(shifted_predicted_list)  # .reshape()
-    shifted_predicted_image = merge_image2(shifted_predicted_image, h-256, w-256)
+    shifted_predicted_image = merge_image2(shifted_predicted_image, h+256, w+256)
 
-    shifted_predicted_image = shifted_predicted_image[:test_image.shape[0]-256, :test_image.shape[1]-256]
+    shifted_predicted_image = shifted_predicted_image[:test_image.shape[0]+256, :test_image.shape[1]+256]
     shifted_predicted_image = shifted_predicted_image.reshape(shifted_predicted_image.shape[0], shifted_predicted_image.shape[1])
 
     # Use shifted prediction as mask
-    predicted_image[128:-128, 128:-128][shifted_predicted_image > 0.95] = 1
+    predicted_image[shifted_predicted_image[128:-128, 128:-128] > 0.75] = 1
 
 if (task == 'binarize') or useThreshold:
     bin_thresh = 0.95
