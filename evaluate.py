@@ -6,7 +6,7 @@ import numpy as np
 enhancedFolder = sys.argv[1]
 GTFolder = sys.argv[2]
 
-def fMeasure(enhanced, gt):
+def calculateValues(enhanced, gt):
     e = cv.imread(enhanced)
     e = cv.bitwise_not(e)
     g = cv.imread(gt)
@@ -28,6 +28,11 @@ def fMeasure(enhanced, gt):
     #cv.imshow('True Positives', tp_1)
     #cv.waitKey(0)
 
+    tn = cv.bitwise_and(cv.bitwise_not(e), cv.bitwise_not(g))
+    #tn = cv.resize(tn, (1000, 500))
+    #cv.imshow('True Negatives', tn)
+    #cv.waitKey(0)
+
     fp = cv.bitwise_xor(e, tp)
     #fp = cv.resize(fp, (1000, 500))
     #cv.imshow('False Positives', fp)
@@ -42,10 +47,12 @@ def fMeasure(enhanced, gt):
     #cv.imshow('enhanced', e)
     #cv.waitKey(0)
 
+    #g = cv.resize(g, (1000, 500))
     #cv.imshow('ground truth', g)
     #cv.waitKey(0)
 
     tp = cv.countNonZero(tp)
+    tn = cv.countNonZero(tn)
     fp = cv.countNonZero(fp)
     fn = cv.countNonZero(fn)
 
@@ -54,10 +61,13 @@ def fMeasure(enhanced, gt):
 
     fm = (2*recall*precision)/(recall+precision)
 
-    return fm
 
-def nrm(enhanced, gt):
-    return 1
+    nrfn = fn/(tp+fn)
+    nrfp = fp/(fp+tn)
+    nrm = (nrfn+nrfp)/2
+
+    return fm, nrm
+
 
 # evaluates the f-measure and NRM for the given input images
 def evaluate():
@@ -71,8 +81,7 @@ def evaluate():
     for enhanced, gt in zip(enhancedImages, GTImages):
         print(enhanced + " - " + gt + ":")
 
-        f = fMeasure(enhanced, gt)
-        n = nrm(enhanced, gt)
+        f, n = calculateValues(enhanced, gt)
 
         print("f-measure: " + str(f))
         print("NRM: " + str(n))
