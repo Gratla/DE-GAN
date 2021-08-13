@@ -18,7 +18,7 @@ pcaFirstFolder = "/pcaFirstDeganSecond"
 deganFolder = "/degan"
 deganFirstFolder = "/deganFirstPcaSecond"
 deganFirstInvertedFolder = "/deganFirstPcaSecondInverted"
-deganMode = "T;epoch130batchsize64_msi_bin"
+deganMode = "S;T;epoch130batchsize64_msi_bin"
 reduceMSI = True
 
 @click.command()
@@ -92,7 +92,7 @@ def invert(file, outputPath):
 
 # Takes the first image from the msi for enhancement
 def degan(msiName, msiPath, outputPath):
-    files = glob.glob(msiPath + '/' + msiName + '.png')
+    files = glob.glob(msiPath + '/' + msiName + '_0.png')
     Path(outputPath + deganFolder).mkdir(parents=True, exist_ok=True)
     subprocess.call(["py", "enhance.py", deganMode,
                      files[0],

@@ -87,7 +87,7 @@ def evaluate():
     fnTotal = 0
 
     for gt in GTImages:
-        enhanced = [i for i in enhancedImages if os.path.basename(gt).split('.')[0] + "_" in i][0]
+        enhanced = [i for i in enhancedImages if (os.path.basename(gt).split('.')[0] + "_") in i or (os.path.basename(gt).split('.')[0] + ".") in i][0]
         print("Enhanced: " + os.path.basename(enhanced))
         print("GT: " + os.path.basename(gt))
 
