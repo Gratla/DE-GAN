@@ -5,9 +5,11 @@ from pathlib import Path
 from time import time
 
 import click
+from PIL import ImageOps
+from PIL import Image
 
 from invert_images import invertImage
-from msi_pca import executePCA
+from msi_pca import executePCA, invertIfNeed
 
 pcaFolder = "/pca"
 pcaFirstComponentExtension = "pca00.png"
@@ -30,21 +32,79 @@ def enhanceMSI(mode, msiname, msipath, outputpath):
     Path(outputPath).mkdir(parents=True, exist_ok=True)
 
     t0 = time()
+
+    if mode == "binarize":
+        binarize(msipath)
+    elif mode == "invert":
+        invert(msipath + "/" + msiname, outputPath)
+    elif (msiname == "_"):
+        names = getAllMSINames(glob.glob(msipath + '/*'))
+
+        print("Found Names of MSI: " + str(names))
+
+        for name in names:
+            if mode == "degan":
+                degan(name, msipath, outputPath)
+            elif mode == "pca":
+                pca(name, msipath, outputPath)
+            elif mode == "pcaFirst":
+                enhancePCAFirst(name, msipath, outputPath)
+            elif mode == "deganFirst":
+                enhanceDEGANFirst(name, msipath, outputPath)
+    else:
+        if mode == "degan":
+            degan(msiname, msipath, outputPath)
+        elif mode == "pca":
+            pca(msiname, msipath, outputPath)
+        elif mode == "pcaFirst":
+            enhancePCAFirst(msiname, msipath, outputPath)
+        elif mode == "deganFirst":
+            enhanceDEGANFirst(msiname, msipath, outputPath)
+
     if mode == "pca":
-        pca(msiname, msipath, outputPath)
-    elif mode == "pcaFirst":
-        enhancePCAFirst(msiname, msipath, outputPath)
-    elif mode == "deganFirst":
-        enhanceDEGANFirst(msiname, msipath, outputPath)
+        postProcessPCA(outputPath)
 
     timeNeeded = (time() - t0)
     print("Done in %0.3fs" % timeNeeded)
 
+def getAllMSINames(files):
+    names = []
+    for f in files:
+        splittedPath = os.path.basename(f).split('_')
+        if splittedPath[-2] not in names:
+            names.append(splittedPath[-2])
+    return names
+
+
+
+def postProcessPCA(path):
+    invertIfNeed(path)
+
+def binarize(path):
+    subprocess.call(["py", "binarize_images.py",
+                     path],
+                    stdout=subprocess.PIPE)
+
+def invert(file, outputPath):
+    im = Image.open(file)
+    im_invert = ImageOps.invert(im)
+    im_invert.save(outputPath)
+
+# Takes the first image from the msi for enhancement
+def degan(msiName, msiPath, outputPath):
+    files = glob.glob(msiPath + '/' + msiName + '.png')
+    Path(outputPath + deganFolder).mkdir(parents=True, exist_ok=True)
+    subprocess.call(["py", "enhance.py", deganMode,
+                     files[0],
+                     outputPath + deganFolder + '/degan_' + msiName + '.png'],
+                    stdout=subprocess.PIPE)
+
 
 # Executes a PCA on the given msi which needs to have 12 images
 def pca(msiName, msiPath, outputPath):
-    files = reduceMSIs(glob.glob(msiPath + '/' + msiName + '_*.png'))
-    executePCA(msiName, msiPath, outputPath, len(files))
+    files = glob.glob(msiPath + '/' + msiName + '_*.png')
+    executePCA(msiName, msiPath, outputPath, 1)
+
 
 
 # Executes a PCA on the input msi, inverts the first component of the result
@@ -53,7 +113,7 @@ def enhancePCAFirst(msiName, msiPath, outputPath):
     files = reduceMSIs(glob.glob(msiPath + '/' + msiName + '_*.png'))
 
     # Execute PCA
-    executePCA(msiName, msiPath, outputPath + pcaFolder, len(files))
+    executePCA(msiName, msiPath, outputPath + pcaFolder, 1)
 
     # Invert first Component
     Path(outputPath + pcaInvertedFolder).mkdir(parents=True, exist_ok=True)
@@ -83,7 +143,7 @@ def enhanceDEGANFirst(msiName, msiPath, outputPath):
                         stdout=subprocess.PIPE)
 
     # Execute PCA
-    executePCA('degan_' + msiName, outputPath + deganFolder, outputPath + deganFirstFolder, len(files))
+    executePCA('degan_' + msiName, outputPath + deganFolder, outputPath + deganFirstFolder, 1)
 
     # Invert first Component
     Path(outputPath + deganFirstInvertedFolder).mkdir(parents=True, exist_ok=True)
