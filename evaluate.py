@@ -1,10 +1,24 @@
 import glob
+import os
 import sys
 import cv2 as cv
 import numpy as np
 
 enhancedFolder = sys.argv[1]
 GTFolder = sys.argv[2]
+
+def printEvaluation(tp, tn, fp, fn):
+    recall = tp / (tp + fn)
+    precision = tp / (tp + fp)
+
+    fm = (2 * recall * precision) / (recall + precision)
+
+    nrfn = fn / (tp + fn)
+    nrfp = fp / (fp + tn)
+    nrm = (nrfn + nrfp) / 2
+
+    print("f-measure: " + str(fm))
+    print("NRM: " + str(nrm))
 
 def calculateValues(enhanced, gt):
     e = cv.imread(enhanced)
@@ -56,18 +70,7 @@ def calculateValues(enhanced, gt):
     fp = cv.countNonZero(fp)
     fn = cv.countNonZero(fn)
 
-    recall = tp/(tp + fn)
-    precision = tp/(tp + fp)
-
-    fm = (2*recall*precision)/(recall+precision)
-
-
-    nrfn = fn/(tp+fn)
-    nrfp = fp/(fp+tn)
-    nrm = (nrfn+nrfp)/2
-
-    return fm, nrm
-
+    return tp, tn, fp, fn
 
 # evaluates the f-measure and NRM for the given input images
 def evaluate():
@@ -78,15 +81,27 @@ def evaluate():
 
     assert len(enhancedImages) == len(GTImages)
 
-    for enhanced, gt in zip(enhancedImages, GTImages):
-        print(enhanced + " - " + gt + ":")
+    tpTotal = 0
+    tnTotal = 0
+    fpTotal = 0
+    fnTotal = 0
 
-        f, n = calculateValues(enhanced, gt)
+    for gt in GTImages:
+        enhanced = [i for i in enhancedImages if os.path.basename(gt).split('.')[0] + "_" in i][0]
+        print("Enhanced: " + os.path.basename(enhanced))
+        print("GT: " + os.path.basename(gt))
 
-        print("f-measure: " + str(f))
-        print("NRM: " + str(n))
+        tp, tn, fp, fn = calculateValues(enhanced, gt)
 
+        tpTotal = tpTotal + tp
+        tnTotal = tnTotal + tn
+        fpTotal = fpTotal + fp
+        fnTotal = fnTotal + fn
 
+        printEvaluation(tp, tn, fp, fn)
+
+    print("\n\nTotal Results")
+    printEvaluation(tpTotal, tnTotal, fpTotal, fnTotal)
 
 if __name__ == '__main__':
     evaluate()
