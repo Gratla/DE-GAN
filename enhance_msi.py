@@ -18,7 +18,7 @@ pcaFirstFolder = "/pcaFirstDeganSecond"
 deganFolder = "/degan"
 deganFirstFolder = "/deganFirstPcaSecond"
 deganFirstInvertedFolder = "/deganFirstPcaSecondInverted"
-deganMode = "S;T;epoch130batchsize64_msi_bin"
+deganMode = "S;T;epoch79_original"
 reduceMSI = True
 
 @click.command()
@@ -67,10 +67,21 @@ def enhanceMSI(mode, msiname, msipath, outputpath):
     timeNeeded = (time() - t0)
     print("Done in %0.3fs" % timeNeeded)
 
+def files(path):
+    for file in os.listdir(path):
+        if os.path.isfile(os.path.join(path, file)):
+            yield file
+
 def getAllMSINames(files):
+    files = [f for f in files if f.endswith(".png")]
+    print(str(files))
     names = []
     for f in files:
         splittedPath = os.path.basename(f).split('_')
+
+        if len(splittedPath) < 2:
+            splittedPath = os.path.basename(f).split('.')
+
         if splittedPath[-2] not in names:
             names.append(splittedPath[-2])
     return names
@@ -92,7 +103,7 @@ def invert(file, outputPath):
 
 # Takes the first image from the msi for enhancement
 def degan(msiName, msiPath, outputPath):
-    files = glob.glob(msiPath + '/' + msiName + '_0.png')
+    files = glob.glob(msiPath + '/' + msiName + '*.png')
     Path(outputPath + deganFolder).mkdir(parents=True, exist_ok=True)
     subprocess.call(["py", "enhance.py", deganMode,
                      files[0],
@@ -153,7 +164,7 @@ def enhanceDEGANFirst(msiName, msiPath, outputPath):
 # Reduces the number of files to the configured ones.
 def reduceMSIs(files):
     if reduceMSI:
-        return [f for f in files if os.path.basename(f).endswith(("_0.png", "_1.png", "_3.png", "_5.png", "_7.png", "_9.png"))]
+        return [f for f in files if os.path.basename(f).endswith(("_0.png", "_1.png", "_3.png", "_5.png"))]
     else:
         return files
 
