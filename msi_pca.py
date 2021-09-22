@@ -16,7 +16,7 @@ def executePCA(msiName, msiPath, outputPath, n_components):
     # collect images in root_dir matching regex; groups 1 and 2 of the match object
     # identify the document and the layer respectively (optional)
     frame = Frame(root_dir=msiPath,
-                  regex='(' + msiName + ')_(\d+).png',
+                  regex='(' + msiName + ')_F(\d+)s.png',
                   group_framename=1,
                   group_layername=2)
 

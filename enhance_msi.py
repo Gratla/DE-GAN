@@ -18,7 +18,8 @@ pcaFirstFolder = "/pcaFirstDeganSecond"
 deganFolder = "/degan"
 deganFirstFolder = "/deganFirstPcaSecond"
 deganFirstInvertedFolder = "/deganFirstPcaSecondInverted"
-deganMode = "S;T;epoch79_original"
+deganMode = "S;epoch100batchsize32_msi_bin"
+#deganMode = "S;T;epoch130batchsize64_msi_bin_wrong_GT"
 reduceMSI = True
 
 @click.command()
@@ -36,21 +37,30 @@ def enhanceMSI(mode, msiname, msipath, outputpath):
     if mode == "binarize":
         binarize(msipath)
     elif mode == "invert":
-        invert(msipath + "/" + msiname, outputPath)
+        invert(msipath + "/" + msiname + ".png", outputPath + "/" + msiname + ".png")
     elif (msiname == "_"):
-        names = getAllMSINames(glob.glob(msipath + '/*'))
+        files = glob.glob(msipath + '/*')
+        names = getAllMSINames(files)
 
         print("Found Names of MSI: " + str(names))
 
-        for name in names:
-            if mode == "degan":
-                degan(name, msipath, outputPath)
-            elif mode == "pca":
-                pca(name, msipath, outputPath)
-            elif mode == "pcaFirst":
-                enhancePCAFirst(name, msipath, outputPath)
-            elif mode == "deganFirst":
-                enhanceDEGANFirst(name, msipath, outputPath)
+        if mode == "invertAll":
+            for file in files:
+                invert(file, outputPath + '/' + os.path.basename(file))
+        elif mode == "scaleAll":
+            for file in files:
+                scale(file, outputPath + '/' + os.path.basename(file), 0.5)
+        else:
+            for name in names:
+                if mode == "degan":
+                    degan(name, msipath, outputPath)
+                elif mode == "pca":
+                    pca(name, msipath, outputPath)
+                elif mode == "pcaFirst":
+                    enhancePCAFirst(name, msipath, outputPath)
+                elif mode == "deganFirst":
+                    enhanceDEGANFirst(name, msipath, outputPath)
+
     else:
         if mode == "degan":
             degan(msiname, msipath, outputPath)
@@ -101,9 +111,14 @@ def invert(file, outputPath):
     im_invert = ImageOps.invert(im)
     im_invert.save(outputPath)
 
+def scale(file, outputPath, factor):
+    im = Image.open(file)
+    im = im.resize((round(im.size[0] * factor), round(im.size[1] * factor)), Image.ANTIALIAS)
+    im.save(outputPath)
+
 # Takes the first image from the msi for enhancement
 def degan(msiName, msiPath, outputPath):
-    files = glob.glob(msiPath + '/' + msiName + '*.png')
+    files = glob.glob(msiPath + '/' + msiName + '_pca00.png')
     Path(outputPath + deganFolder).mkdir(parents=True, exist_ok=True)
     subprocess.call(["py", "enhance.py", deganMode,
                      files[0],
@@ -164,7 +179,8 @@ def enhanceDEGANFirst(msiName, msiPath, outputPath):
 # Reduces the number of files to the configured ones.
 def reduceMSIs(files):
     if reduceMSI:
-        return [f for f in files if os.path.basename(f).endswith(("_0.png", "_1.png", "_3.png", "_5.png"))]
+        #return [f for f in files if os.path.basename(f).endswith(("_0.png", "_1.png", "_3.png", "_5.png"))] # For MSBin
+        return [f for f in files if os.path.basename(f).endswith(("_F1s.png", "_F2s.png", "_F3s.png", "_F5s.png"))] # For MS-TEx
     else:
         return files
 
