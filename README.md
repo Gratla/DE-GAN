@@ -1,4 +1,27 @@
-# DE-GAN: A Conditional Generative Adversarial Network for Document Enhancement
+# Binarization of Manuscripts using DE-GAN and PCA
+
+## Description
+This is an implementation for the bachelor thesis [Binarization of Manuscripts using DE-GAN and PCA] by Philipp Leeb.
+It is used to perform a binarization of MSIs with PCA, DE-GAN and combinations of both.
+
+## Requirements
+- tensorflow
+- matplotlib
+- pillow
+- scipy
+- imageio
+- tqdm
+- time
+- pathlib
+- numpy
+- cv2
+
+## Usage
+To enhance an MSI, use the enhance_msi.py script. There, the different modes and configurations are described.
+The other scripts are either the single components of the pipeline or provide an useful tool for processing images.
+A brief description can be found at the top of each script.
+
+# DE-GAN: A Conditional Generative Adversarial Network for Document Enhancement (Stand-alone DE-GAN)
 ## Description
 This is an implementation for the paper [DE-GAN: A Conditional Generative Adversarial Network for Document Enhancement](https://ieeexplore.ieee.org/document/9187695)<br>
 DE-GAN is a conditional generative adversarial network designed to enhance the document quality before the recognition process. It could be used for document cleaning, binarization, deblurring and watermark removal. The weights are available to test the enhancement. 
@@ -18,7 +41,7 @@ This work is only allowed for academic research use. For commercial use, please 
 git clone https://github.com/dali92002/DE-GAN
 cd DE-GAN
 ```
-- Then, download the trained weghts to directly use the model for document enhancement, it is important to save these weights in the subfolder named weights, in the DE-GAN folder. The link to download the weights is : https://drive.google.com/file/d/1J_t-TzR2rxp94SzfPoeuJniSFLfY3HM-/view?usp=sharing
+- Then, download the trained weights to directly use the model for document enhancement, it is important to save these weights in the subfolder named weights, in the DE-GAN folder. The link to download the weights is : https://drive.google.com/file/d/1J_t-TzR2rxp94SzfPoeuJniSFLfY3HM-/view?usp=sharing
 ## Using DE-GAN
 ### Document binarization
 - To binarize an image use the followng command: 
