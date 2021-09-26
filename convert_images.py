@@ -3,8 +3,11 @@ import os
 from PIL import Image
 from numpy import asarray
 
-folder = sys.argv[1]
+# This script converts all images in the passed folder into an 8-bit greyscale image and stores them into a subfolder
+# called "converted".
+# usage: py convert_images.py ./your/folder/path
 
+folder = sys.argv[1]
 
 def convertImage(filename):
     im = Image.open(folder + '/' + filename)

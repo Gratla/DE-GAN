@@ -4,6 +4,12 @@ import numpy as np
 import cv2 as cv
 from numpy import asarray
 
+# This script implements a fusion of multiple images.
+# It is NOT used for any other part and also not used in the thesis. This is only experimental.
+#
+# usage: py msi_fusion.py <mode> ./your/folder/path/startname ./output/path
+# mode: currently, only "overlay" exists
+
 mode = sys.argv[1]
 msiStartPath = sys.argv[2]
 outputPath = sys.argv[3]

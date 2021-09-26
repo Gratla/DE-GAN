@@ -2,6 +2,11 @@ import sys
 import os
 from PIL import Image, ImageOps
 
+# This script scales pixel values of the images provided in the passed folder.
+# It uses a static threshold for binarizing the images.
+# This script is not used in the thesis!
+#
+# usage: py scale_images.py ./your/folder/path
 
 folder = sys.argv[1]
 

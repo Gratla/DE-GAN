@@ -11,6 +11,38 @@ from PIL import Image
 from invert_images import invertImage
 from msi_pca import executePCA, invertIfNeed
 
+# This script implements the pipelines for DFPS and PFDS as well as the possibility to call the stand-alone DE-GAN
+# and PCA. Note, that the Pipelines do not work with every MSI due to the need of manuell inversion. Also, the scripts
+# does a lot at once which may cause some unexpected behaviour, so always double-check the results.
+# (In the degan-function, the filename-ending might needs to be changed! Else, the files will not be found!)
+# The weights and settings for the DE-GAN are configured in the deganMode variable.
+#
+# usage: py enhance_msi.py <mode> <msiname> <msipath> <outputpath>
+#
+# mode: There are multiple modes which can be configured.
+#   binarize:       Calls the binarize_images.py script and uses your <msipath> as folder (<outputpath> unused)
+#   invert:         Inverts a MSI (all channels) with the name <msiname> in the <msipath> folder and saves them with
+#                   the same name (<msiname>) in the <outputpath> directory.
+#   invertAll:      ONLY WITH <msiname> == "_". Inverts all MSIs stored in <msipath> folder.
+#                   Same behaviour as invert-mode.
+#   scaleAll:       ONLY WITH <msiname> == "_". Scales all images in the <msipath> folder
+#                   and saves them in the <outputpath> directory. (factor is HARDCODED!!!)
+#   degan:          Calls the evaluate.py script to enhance one image (filename-extension HARDCODED!!!).
+#                   The file with the <msiname> and its extension (example _0.png or _pca00.png) in the <msipath> folder
+#                   will be enhanced and saved to the <outputpath> directory. If <msiname> == "_", all MSIs in the
+#                   <msipath> folder will be enhanced (WARNING: This may take a long time. i.e. several hours)
+#   pca:            Computes the first principal component for the file with name <msiname> in the <msipath> folder.
+#                   The result is saved in the <outputpath> folder. Therefore, the files and logic of the multispectral
+#                   are used. If <msiname> == "_", all MSIs in the <msipath> folder will be used.
+#   pcaFirst:       The given <msiname> file will be enhanced with the PFDS - pipeline (experimental)
+#                   If <msiname> == "_", all MSIs in the <msipath> folder will be enhanced.
+#                   (WARNING: This may take a long time. i.e. several hours)
+#   deganFirst:     The given <msiname> file will be enhanced with the DFPS - pipeline (experimental)
+#                   If <msiname> == "_", all MSIs in the <msipath> folder will be enhanced.
+#                   (WARNING: This may take a long time. i.e. several hours)
+
+
+# Configuration for the script
 pcaFolder = "/pca"
 pcaFirstComponentExtension = "pca00.png"
 pcaInvertedFolder = "/pcaInverted"

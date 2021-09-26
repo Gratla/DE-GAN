@@ -4,6 +4,10 @@ from pathlib import Path
 import numpy as np
 import cv2 as cv
 
+# This script binarizes all images in the passed folder and stores them into a subfolder called "binarized"
+# As threshold, the average pixel value is calculated.
+# usage: py binarize_images.py ./your/folder/path
+
 folder = sys.argv[1]
 
 def files(path):
@@ -13,8 +17,6 @@ def files(path):
 
 def binarizeImage(filename):
     im = cv.imread(folder + '/' + filename)
-    #im = im.convert('L')
-    #im = im.point(lambda x: 0 if x < 128 else 255, '1')
     Path(folder + "/binarized").mkdir(parents=True, exist_ok=True)
 
     avg_color_per_row = np.average(im, axis=0)
@@ -22,7 +24,6 @@ def binarizeImage(filename):
 
     th, im_binarized = cv.threshold(im, avg_color[0], np.iinfo(im.dtype).max, cv.THRESH_BINARY)
     cv.imwrite(folder + "/binarized/" + f, im_binarized)
-    #im.save(folder + '/binarized/' + filename)
 
 
 for f in files(folder):

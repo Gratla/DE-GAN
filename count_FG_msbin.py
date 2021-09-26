@@ -4,6 +4,12 @@ import sys
 import cv2 as cv
 import numpy as np
 
+# This script counts the pixels of both foregrounds (FG1 and FG2) in the labels of the MSBin dataset.
+# It prints the results for each image as well as the total results as number of pixels and the percentages.
+# As input, use the folder of the labels.
+
+# usage: py count_FG_msbin.py ./your/label/folder/path
+
 GTFolder = sys.argv[1]
 
 def printEvaluation(fg1, fg2):
@@ -29,7 +35,6 @@ def calculateValues(gt):
     #temp_fg2 = cv.resize(fg2, (1000, 500))
     #cv.imshow('FG2', temp_fg2)
     #cv.waitKey(0)
-
 
     fg1 = cv.countNonZero(fg1)
     fg2 = cv.countNonZero(fg2)

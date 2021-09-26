@@ -8,6 +8,10 @@ from tensorflow.python.keras.models import *
 from tensorflow.python.keras.layers import *
 from PIL import Image
 
+# This script enhances one image with the configured weights and settings (DE-GAN script).
+# usage: py enhance.py <mode> ./input/file/path ./output/file/path
+# example: py enhance.py S;T;epoch100batchsize32_msi_bin ./input/file/path ./output/file/path
+
 input_size = (256,256,1)
 
 def unet(pretrained_weights = None,input_size = input_size):
@@ -110,8 +114,6 @@ def unet_bin(pretrained_weights = None,input_size = input_size):
 #     model.compile(optimizer = Adam(lr = 1e-4), loss = 'binary_crossentropy', metrics = ['accuracy'])
     
     return model
-
-
 
 
 # The task defines the used weights for the generator. The string may have prefixes delimited by ';' to enable settings:

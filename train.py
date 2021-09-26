@@ -18,7 +18,10 @@ import random
 import os.path
 import imageio
 
-
+# This script trains the DE-GAN with the folders in ./data/A (original images) and ./data/B (groundtruths).
+# Every second epoch is stored. The configuration is done via HARDCODED values in the code.
+#
+# usage: py train.py
 
 def getPatches(watermarked_image,clean_image,mystride):
     watermarked_patches=[]

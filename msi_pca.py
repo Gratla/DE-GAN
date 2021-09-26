@@ -6,6 +6,8 @@ from multispectral import Frame, Unmixing
 import numpy as np
 from scipy.signal import argrelextrema
 
+# This script sets up the pca (implemented in the multispectral folder) and provides a function for external use.
+# It is used in the enhance_msi.py script! (NO STANDALONE USE)
 
 def files(path):
     for file in os.listdir(path):

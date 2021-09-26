@@ -6,8 +6,13 @@ from pathlib import Path
 import cv2 as cv
 import numpy as np
 
-folder = sys.argv[1]
+# This script converts all images in the passed folder from labels (background black)
+# into groundtruth (background white) for the DE-GAN training.
+# The converted images are saved in a subfolder called "groundtruth".
+#
+# usage: py labelsToGroundtruth.py ./your/folder/path
 
+folder = sys.argv[1]
 
 def convertImage(file):
     g = cv.imread(file)

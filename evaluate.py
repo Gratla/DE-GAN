@@ -4,6 +4,13 @@ import sys
 import cv2 as cv
 import numpy as np
 
+# This script counts the pixels of the labels and results and calculates the F-measure and NRM.
+# It prints the results for each image as well as the total results.
+# As input, use the folder of the enhanced images and the labels.
+# Note, that the labels need to use black as background!
+#
+# usage: py evaluate.py ./your/enhanced/folder/path /your/label/folder/path
+
 enhancedFolder = sys.argv[1]
 GTFolder = sys.argv[2]
 
